@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Pembelajaran Interaktif - Sistem Ekskresi Manusia</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3C096C',
+                        tosca: '#2EC4B6',
+                        offwhite: '#F8F9FA',
+                        darkbg: '#121212',
+                        carddark: '#1E1E2F'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- html2canvas for PDF/PNG export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .dark .glass-card { background: rgba(30, 30, 47, 0.95); }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #3C096C; border-radius: 4px; }
+        /* 3D Button style modern Canva feel */
+        .btn-3d {
+            transition: all 0.15s ease;
+            box-shadow: 0px 6px 0px rgba(60, 9, 108, 0.3);
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0px 2px 0px rgba(60, 9, 108, 0.3);
+        }
+    </style>
+</head>
+<body class="h-full bg-offwhite dark:bg-darkbg text-gray-800 dark:text-gray-100 transition-colors duration-300 flex flex-col justify-between">
+
+    <!-- BACKGROUND AUDIO LOFI (Pixabay royalty-free lofi stream) -->
+    <audio id="bgAudio" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- TOP NAVBAR & CONTROLS -->
+    <header class="bg-primary text-white shadow-md sticky top-0 z-50 px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <button onclick="goHome()" id="homeBtn" class="hidden bg-tosca text-primary font-bold px-3 py-1.5 rounded-lg text-sm hover:opacity-90 transition flex items-center space-x-1 shadow">
+                <i class="fa-solid fa-house"></i> <span>Menu</span>
+            </button>
+            <div>
+                <h1 class="text-xs md:text-sm text-tosca font-bold tracking-wider">SMPN 3 WARUNGGUNUNG</h1>
+                <h2 class="text-sm md:text-base font-extrabold truncate">Sistem Ekskresi Manusia (Kelas VIII)</h2>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2 md:space-x-3">
+            <!-- Audio Toggle -->
+            <button onclick="toggleAudio()" id="audioToggleBtn" title="Putar/Hentikan Musik Lofi" class="bg-white/20 hover:bg-white/30 p-2 rounded-full transition text-sm">
+                <i id="audioIcon" class="fa-solid fa-volume-xmark"></i>
+            </button>
+            <!-- TTS Toggle -->
+            <button onclick="toggleSpeech()" id="ttsToggleBtn" title="Bacakan Halaman Ini (Text-to-Speech Indonesia)" class="bg-white/20 hover:bg-white/30 p-2 rounded-full transition text-sm">
+                <i id="ttsIcon" class="fa-solid fa-volume-high"></i>
+            </button>
+            <!-- Dark Mode Toggle -->
+            <button onclick="toggleDarkMode()" title="Ubah Tema" class="bg-white/20 hover:bg-white/30 p-2 rounded-full transition text-sm">
+                <i id="themeIcon" class="fa-solid fa-moon"></i>
+            </button>
+            <!-- Student Profile Badge -->
+            <div id="studentBadge" class="hidden bg-tosca text-primary px-3 py-1 rounded-full text-xs font-semibold shadow">
+                <span id="badgeName">-</span> | <span id="badgeClass">-</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- PROGRESS BAR ATAS -->
+    <div id="progressBarContainer" class="hidden w-full bg-gray-300 dark:bg-gray-700 h-2.5">
+        <div id="progressBar" class="bg-tosca h-2.5 transition-all duration-500 rounded-r-full" style="width: 0%"></div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow container mx-auto px-4 py-6 max-w-5xl">
+
+        <!-- ================= 1. HALAMAN PEMBUKA / LOGIN ================= -->
+        <section id="sectionLogin" class="max-w-xl mx-auto glass-card border border-primary/20 p-8 rounded-2xl shadow-2xl my-6 animate-fade-in">
+            <div class="text-center mb-6">
+                <div class="inline-block p-4 bg-primary/10 rounded-full text-primary dark:text-tosca mb-3">
+                    <i class="fa-solid fa-graduation-cap text-5xl"></i>
+                </div>
+                <h2 class="text-xs uppercase tracking-widest text-tosca font-bold">MPI SMPN 3 WARUNGGUNUNG</h2>
+                <h3 class="text-2xl md:text-3xl font-extrabold text-primary dark:text-tosca mt-1">MEDIA PEMBELAJARAN INTERAKTIF</h3>
+                <p class="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-2 font-medium">Menganalisis Sistem Organisasi Kehidupan: Sistem Ekskresi pada Manusia & Gangguannya</p>
+            </div>
+
+            <div class="bg-tosca/10 border-l-4 border-tosca p-4 rounded-r-xl mb-6 text-xs md:text-sm">
+                <p class="font-bold text-primary dark:text-tosca mb-1"><i class="fa-solid fa-circle-info"></i> Petunjuk Penggunaan:</p>
+                <ol class="list-decimal list-inside space-y-1 text-gray-700 dark:text-gray-200">
+                    <li>Isi nama lengkap dan pilih kelas Anda di bawah ini.</li>
+                    <li>Tekan tombol <strong>"MULAI BELAJAR"</strong> untuk masuk ke menu interaktif.</li>
+                    <li>Pelajari materi, selesaikan kuis HOTS, dan klaim sertifikat hasil belajarmu!</li>
+                </ol>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Nama Lengkap Murid</label>
+                    <input type="text" id="inputNama" required placeholder="Ketik nama lengkapmu di sini..." class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 focus:ring-2 focus:ring-primary outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Pilih Kelas</label>
+                    <select id="selectKelas" onchange="checkManualClass()" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 focus:ring-2 focus:ring-primary outline-none transition">
+                        <option value="">-- Pilih Kelas --</option>
+                        <option value="VIII A">VIII A</option>
+                        <option value="VIII B">VIII B</option>
+                        <option value="VIII C">VIII C</option>
+                        <option value="VIII D">VIII D</option>
+                        <option value="VIII E">VIII E</option>
+                        <option value="LAINNYA">LAINNYA / TULIS MANUAL</option>
+                    </select>
+                </div>
+                <div id="manualClassDiv" class="hidden">
+                    <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Tulis Kelas Manual</label>
+                    <input type="text" id="inputManualKelas" placeholder="Contoh: VIII Unggulan" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 focus:ring-2 focus:ring-primary outline-none transition">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-primary to-tosca text-white font-bold rounded-xl shadow-lg hover:opacity-95 transition transform active:scale-95 text-base btn-3d flex items-center justify-center space-x-2">
+                    <span>MULAI BELAJAR</span> <i class="fa-solid fa-circle-play"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- ================= 2. MENU UTAMA (GRID KOTAK 3D STYLE CANVA) ================= -->
+        <section id="sectionMenu" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-primary to-tosca text-white p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold">Selamat Datang, <span id="welcomeName">Murid</span>! 👋</h2>
+                    <p class="text-xs md:text-sm opacity-90 mt-1">Silakan pilih modul interaktif di bawah ini untuk memulai petualangan belajarmu.</p>
+                </div>
+                <div class="mt-4 md:mt-0 bg-white/20 backdrop-blur-md px-5 py-3 rounded-2xl text-center border border-white/30">
+                    <span class="text-xs uppercase tracking-wider block font-semibold text-tosca">Progress Total</span>
+                    <span id="globalProgressText" class="text-2xl font-black text-white">0%</span>
+                </div>
+            </div>
+
+            <!-- Menu Grid 3D -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                <button onclick="openSection('tujuan')" class="btn-3d bg-white dark:bg-carddark p-6 rounded-2xl border-2 border-primary/20 text-left hover:border-tosca transition flex flex-col justify-between">
+                    <div class="text-4xl mb-3">🎯</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-primary dark:text-tosca">Tujuan Pembelajaran</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Target kompetensi sistem ekskresi.</p>
+                    </div>
+                </button>
+
+                <button onclick="openSection('apersepsi')" class="btn-3d bg-white dark:bg-carddark p-6 rounded-2xl border-2 border-primary/20 text-left hover:border-tosca transition flex flex-col justify-between">
+                    <div class="text-4xl mb-3">💡</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-primary dark:text-tosca">Apersepsi</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Gambar & pertanyaan pemantik rasa tahu.</p>
+                    </div>
+                </button>
+
+                <button onclick="openSection('asesmenAwal')" class="btn-3d bg-white dark:bg-carddark p-6 rounded-2xl border-2 border-primary/20 text-left hover:border-tosca transition flex flex-col justify-between">
+                    <div class="text-4xl mb-3">📝</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-primary dark:text-tosca">Asesmen Awal</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Uji pemahaman awal 5 soal PG.</p>
+                    </div>
+                </button>
+
+                <button onclick="openSection('materi')" class="btn-3d bg-white dark:bg-carddark p-6 rounded-2xl border-2 border-primary/20 text-left hover:border-tosca transition flex flex-col justify-between">
+                    <div class="text-4xl mb-3">📚</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-primary dark:text-tosca">Materi Pembelajaran</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ginjal, Kulit, Paru-paru, Hati & Penyakit.</p>
+                    </div>
+                </button>
+
+                <button onclick="openSection('simulasi')" class="btn-3d bg-white dark:bg-carddark p-6 rounded-2xl border-2 border-primary/20 text-left hover:border-tosca transition flex flex-col justify-between">
+                    <div class="text-4xl mb-3">⚡</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-primary dark:text-tosca">Simulasi / Aktivitas</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pencocokan organ dan zat sisa.</p>
+                    </div>
+                </button>
+
+                <button onclick="openSection('kuis')" class="btn-3d bg-white dark:bg-carddark p-6 rounded-2xl border-2 border-primary/20 text-left hover:border-tosca transition flex flex-col justify-between">
+                    <div class="text-4xl mb-3">🏆</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-primary dark:text-tosca">Kuis Interaktif</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">10 Soal HOTS berkonteks cerita.</p>
+                    </div>
+                </button>
+
+                <button onclick="openSection('asesmenAkhir')" class="btn-3d bg-white dark:bg-carddark p-6 rounded-2xl border-2 border-primary/20 text-left hover:border-tosca transition flex flex-col justify-between">
+                    <div class="text-4xl mb-3">📊</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-primary dark:text-tosca">Asesmen Akhir</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Evaluasi tingkat sedang - tinggi.</p>
+                    </div>
+                </button>
+
+                <button onclick="openSection('refleksi')" class="btn-3d bg-white dark:bg-carddark p-6 rounded-2xl border-2 border-primary/20 text-left hover:border-tosca transition flex flex-col justify-between">
+                    <div class="text-4xl mb-3">💬</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-primary dark:text-tosca">Refleksi Belajar</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ulasan kesan dan emosi belajarmu.</p>
+                    </div>
+                </button>
+
+                <button onclick="openSection('sertifikat')" class="btn-3d bg-white dark:bg-carddark p-6 rounded-2xl border-2 border-primary/20 text-left hover:border-tosca transition flex flex-col justify-between">
+                    <div class="text-4xl mb-3">🎓</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-primary dark:text-tosca">Sertifikat Hasil</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Klaim & download sertifikat A4 PNG.</p>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= 3. KONTEN MODUL HALAMAN-HALAMAN ================= -->
+
+        <!-- 3.1 TUJUAN PEMBELAJARAN -->
+        <div id="content-tujuan" class="content-section hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl shadow-lg border-l-8 border-primary">
+                <h2 class="text-2xl font-bold text-primary dark:text-tosca mb-4 flex items-center"><i class="fa-solid fa-bullseye mr-2"></i> Tujuan Pembelajaran</h2>
+                <p class="text-gray-700 dark:text-gray-200 mb-4 leading-relaxed text-sm md:text-base">
+                    Melalui media pembelajaran interaktif ini, kamu akan menganalisis Sistem Organisasi Kehidupan dengan fokus materi <strong>Sistem Ekskresi pada Manusia dan Gangguan Penyakitnya</strong>.
+                </p>
+                <div class="bg-primary/5 dark:bg-gray-800 p-4 rounded-xl space-y-3 border border-primary/10">
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+                        <p class="text-sm">Menjelaskan pengertian sistem ekskresi serta mengidentifikasi 4 organ utamanya (Ginjal, Kulit, Paru-paru, Hati).</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+                        <p class="text-sm">Menganalisis mekanisme 3 tahap pembentukan urine di dalam ginjal (Filtrasi, Reabsorpsi, Augmentasi).</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <span class="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+                        <p class="text-sm">Menganalisis berbagai gangguan penyakit sistem ekskresi serta merumuskan upaya menjaga kesehatannya dalam kehidupan sehari-hari.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-between">
+                <button onclick="openMenu()" class="px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-xl hover:opacity-90"><i class="fa-solid fa-arrow-left mr-1"></i> Menu</button>
+                <button onclick="openSection('apersepsi')" class="px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:opacity-90">Lanjut: Apersepsi <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+        </div>
+
+        <!-- 3.2 APERSEPSI -->
+        <div id="content-apersepsi" class="content-section hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl shadow-lg border-l-8 border-tosca">
+                <h2 class="text-2xl font-bold text-primary dark:text-tosca mb-4 flex items-center"><i class="fa-solid fa-lightbulb mr-2"></i> Apersepsi (Pancingan Pengetahuan)</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mb-6">
+                    <div>
+                        <!-- SVG Gambar Pemantik Ekskresi -->
+                        <div class="bg-gradient-to-br from-primary/10 to-tosca/20 p-6 rounded-2xl text-center border border-tosca/30">
+                            <svg class="w-full h-48 mx-auto" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="100" cy="100" r="80" fill="#2EC4B6" fill-opacity="0.2"/>
+                                <path d="M70 60C70 40 130 40 130 60C130 90 70 110 70 140C70 160 130 160 130 140" stroke="#3C096C" stroke-width="12" stroke-linecap="round"/>
+                                <circle cx="100" cy="100" r="15" fill="#3C096C"/>
+                            </svg>
+                            <p class="text-xs font-bold text-primary dark:text-tosca mt-2">Keseimbangan Fluid & Zat Sisa Tubuh</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-tosca/10 p-4 rounded-xl border border-tosca/30">
+                            <h4 class="font-bold text-primary dark:text-tosca mb-1"><i class="fa-solid fa-circle-question"></i> Pertanyaan Pemantik 1:</h4>
+                            <p class="text-sm italic text-gray-700 dark:text-gray-200">"Pernahkah kamu mendapati urine berwarna coklat pekat atau pekat kemerahan setelah olahraga terik? Apakah itu pertanda tubuhmu dehidrasi atau ada organ yang bermasalah?"</p>
+                        </div>
+                        <div class="bg-tosca/10 p-4 rounded-xl border border-tosca/30">
+                            <h4 class="font-bold text-primary dark:text-tosca mb-1"><i class="fa-solid fa-circle-question"></i> Pertanyaan Pemantik 2:</h4>
+                            <p class="text-sm italic text-gray-700 dark:text-gray-200">"Saat cuaca dingin kamu lebih sering ingin buang air kecil, sedangkan saat panas tubuhmu lebih banyak berkeringat. Mengapa sistem tubuh kita bisa mengatur hal tersebut?"</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs md:text-sm text-gray-600 dark:text-gray-300 italic text-center bg-gray-100 dark:bg-gray-800 p-3 rounded-xl">Simpan jawabanmu! Kita akan menemukan jawaban ilmiahnya pada modul materi berikut.</p>
+            </div>
+            <div class="flex justify-between">
+                <button onclick="openSection('tujuan')" class="px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-xl hover:opacity-90"><i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya</button>
+                <button onclick="openSection('asesmenAwal')" class="px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:opacity-90">Lanjut: Asesmen Awal <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+        </div>
+
+        <!-- 3.3 ASESMEN AWAL -->
+        <div id="content-asesmenAwal" class="content-section hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl shadow-lg border-l-8 border-primary">
+                <h2 class="text-2xl font-bold text-primary dark:text-tosca mb-2 flex items-center"><i class="fa-solid fa-clipboard-question mr-2"></i> Asesmen Awal (Diagnostic)</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">Jawablah 5 soal pilihan ganda di bawah ini untuk mengetahui tingkat pemahaman awalmu!</p>
+                
+                <div id="asesmenAwalForm" class="space-y-6">
+                    <!-- Dinamis Diisi JS -->
+                </div>
+                <div id="asesmenAwalResult" class="hidden mt-6 p-4 bg-tosca/20 border border-tosca rounded-xl text-center font-bold text-primary dark:text-tosca"></div>
+            </div>
+            <div class="flex justify-between">
+                <button onclick="openSection('apersepsi')" class="px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-xl hover:opacity-90"><i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya</button>
+                <button onclick="openSection('materi')" class="px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:opacity-90">Lanjut: Materi <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+        </div>
+
+        <!-- 3.4 MATERI PEMBELAJARAN (LENGKAP & VISUAL) -->
+        <div id="content-materi" class="content-section hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl shadow-lg border-l-8 border-tosca space-y-8">
+                <div class="flex justify-between items-center border-b pb-4 border-gray-200 dark:border-gray-700">
+                    <h2 class="text-2xl font-bold text-primary dark:text-tosca flex items-center"><i class="fa-solid fa-book-open mr-2"></i> Materi Pembelajaran: Sistem Ekskresi Manusia</h2>
+                    <button onclick="openSection('materi')" class="text-xs bg-tosca/20 text-primary dark:text-tosca px-3 py-1.5 rounded-lg font-bold hover:bg-tosca/30"><i class="fa-solid fa-rotate-left mr-1"></i> Baca Dari Awal</button>
+                </div>
+
+                <!-- Section 1: Pengertian -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-primary dark:text-tosca">1. Konsep Dasar Ekskresi</h3>
+                    <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+                        <strong>Ekskresi</strong> adalah proses pengeluaran zat-zat sisa metabolisme yang sudah tidak berguna dan beracun (toksik) bagi tubuh. Berbeda dengan <em>defekasi</em> (pengeluaran sisa makanan berbentuk feses dari pencernaan) atau <em>sekresi</em> (pengeluaran zat bermanfaat seperti hormon/enzim).
+                    </p>
+                </div>
+
+                <!-- Kotak Tosca: Fakta Menarik -->
+                <div class="bg-tosca/15 border-l-4 border-tosca p-4 rounded-xl space-y-1">
+                    <h4 class="font-bold text-primary dark:text-tosca flex items-center text-sm"><i class="fa-solid fa-star text-tosca mr-2"></i> Tahukah Kamu? / Fakta Menarik</h4>
+                    <p class="text-xs md:text-sm text-gray-700 dark:text-gray-200">
+                        Sepanjang hari, ginjalmu menyaring sekitar <strong>150–180 liter darah</strong>! Namun 99% dari cairan tersebut diserap kembali ke dalam tubuh, sehingga hanya menghasilkan sekitar 1–2 liter urine per hari.
+                    </p>
+                </div>
+
+                <!-- Section 2: 4 Organ Ekskresi (Tabel & Detail) -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-bold text-primary dark:text-tosca">2. Organ Utama Sistem Ekskresi</h3>
+                    
+                    <!-- Tabel Ringkasan Organ -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs md:text-sm border-collapse rounded-xl overflow-hidden shadow">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                    <th class="p-3">Organ Ekskresi</th>
+                                    <th class="p-3">Zat Sisa yang Dikeluarkan</th>
+                                    <th class="p-3">Fungsi Utama</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <tr>
+                                    <td class="p-3 font-bold text-primary dark:text-tosca">🫘 Ginjal (Ren)</td>
+                                    <td class="p-3">Urine (Air, Urea, Garam, Amonia)</td>
+                                    <td class="p-3">Menyaring darah & menjaga osmoregulasi cairan tubuh</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-primary dark:text-tosca">👤 Kulit (Integumen)</td>
+                                    <td class="p-3">Keringat (Air, Garam $NaCl$, Urea)</td>
+                                    <td class="p-3">Mengatur suhu tubuh & mengeluarkan zat sisa</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-primary dark:text-tosca">🫁 Paru-Paru (Pulmo)</td>
+                                    <td class="p-3">Karbon Dioksida ($CO_2$) & Uap Air ($H_2O$)</td>
+                                    <td class="p-3">Pengeluaran gas sisa respirasi seluler</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-primary dark:text-tosca">🧬 Hati (Hepar)</td>
+                                    <td class="p-3">Zat Warna Empedu (Bilirubin) & Urea</td>
+                                    <td class="p-3">Perombakan hemoglobin sel darah merah tua & protein</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 3: Diagram Pembentukan Urine -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-bold text-primary dark:text-tosca">3. Diagram Alur Pembentukan Urine di Ginjal</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-primary/5 dark:bg-gray-800 p-4 rounded-xl border border-primary/20 text-center space-y-2">
+                            <span class="bg-primary text-white font-bold text-xs px-3 py-1 rounded-full">Tahap 1</span>
+                            <h4 class="font-bold text-primary dark:text-tosca">Filtrasi (Penyaringan)</h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-300"><strong>Tempat:</strong> Glomerulus & Kapsula Bowman.<br><strong>Hasil:</strong> Urine Primer (masih mengandung glukosa & asam amino).</p>
+                        </div>
+                        <div class="bg-tosca/10 dark:bg-gray-800 p-4 rounded-xl border border-tosca/30 text-center space-y-2">
+                            <span class="bg-tosca text-primary font-bold text-xs px-3 py-1 rounded-full">Tahap 2</span>
+                            <h4 class="font-bold text-primary dark:text-tosca">Reabsorpsi (Penyerapan Kembali)</h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-300"><strong>Tempat:</strong> Tubulus Kontortus Proksimal.<br><strong>Hasil:</strong> Urine Sekunder (zat penting diserap balik ke darah).</p>
+                        </div>
+                        <div class="bg-primary/5 dark:bg-gray-800 p-4 rounded-xl border border-primary/20 text-center space-y-2">
+                            <span class="bg-primary text-white font-bold text-xs px-3 py-1 rounded-full">Tahap 3</span>
+                            <h4 class="font-bold text-primary dark:text-tosca">Augmentasi (Pengeluaran Zat)</h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-300"><strong>Tempat:</strong> Tubulus Kontortus Distal.<br><strong>Hasil:</strong> Urine Sesungguhnya (siap ditampung di pelvis).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Penting Penyakit -->
+                <div class="bg-tosca/15 border border-tosca p-4 rounded-xl space-y-2">
+                    <h4 class="font-bold text-primary dark:text-tosca flex items-center text-sm"><i class="fa-solid fa-triangle-exclamation text-tosca mr-2"></i> Info Penting: Gangguan & Penyakit Ekskresi</h4>
+                    <ul class="list-disc list-inside text-xs md:text-sm text-gray-700 dark:text-gray-200 space-y-1">
+                        <li><strong>Batu Ginjal:</strong> Endapan kristal garam kalsium dalam ginjal atau saluran kemih.</li>
+                        <li><strong>Nefritis:</strong> Peradangan nefron akibat infeksi bakteri <em>Streptococcus</em>.</li>
+                        <li><strong>Albuminuria:</strong> Ditemukannya protein dalam urine akibat kerusakan glomerulus.</li>
+                        <li><strong>Diabetes Insipidus:</strong> Kekurangan hormon ADH yang menyebabkan produksi urine berlebihan.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex justify-between">
+                <button onclick="openSection('asesmenAwal')" class="px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-xl hover:opacity-90"><i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya</button>
+                <button onclick="openSection('simulasi')" class="px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:opacity-90">Lanjut: Simulasi <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+        </div>
+
+        <!-- 3.5 SIMULASI / AKTIVITAS INTERAKTIF -->
+        <div id="content-simulasi" class="content-section hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl shadow-lg border-l-8 border-primary">
+                <h2 class="text-2xl font-bold text-primary dark:text-tosca mb-2 flex items-center"><i class="fa-solid fa-puzzle-piece mr-2"></i> Aktivitas Interaktif: Mencocokkan Pasangan Organ</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">Pasangkan setiap Organ Ekskresi dengan Zat Sisa yang paling tepat!</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-primary dark:text-tosca">Organ Ekskresi:</h4>
+                        <div class="p-3 bg-primary/10 rounded-xl font-semibold text-sm">1. Ginjal (Ren)</div>
+                        <div class="p-3 bg-primary/10 rounded-xl font-semibold text-sm">2. Kulit (Integumen)</div>
+                        <div class="p-3 bg-primary/10 rounded-xl font-semibold text-sm">3. Paru-Paru (Pulmo)</div>
+                        <div class="p-3 bg-primary/10 rounded-xl font-semibold text-sm">4. Hati (Hepar)</div>
+                    </div>
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-primary dark:text-tosca">Pasangkan dengan Zat Sisa yang Tepat:</h4>
+                        <select id="match1" class="w-full p-2.5 rounded-xl border border-gray-300 dark:bg-gray-800 text-sm">
+                            <option value="">-- Pilih untuk Ginjal --</option>
+                            <option value="benar">Urine (Air, Urea, Garam Mineral)</option>
+                            <option value="salah">Keringat</option>
+                            <option value="salah">Karbon Dioksida</option>
+                            <option value="salah">Cairan Empedu</option>
+                        </select>
+                        <select id="match2" class="w-full p-2.5 rounded-xl border border-gray-300 dark:bg-gray-800 text-sm">
+                            <option value="">-- Pilih untuk Kulit --</option>
+                            <option value="salah">Urine</option>
+                            <option value="benar">Keringat (Air & Garam)</option>
+                            <option value="salah">Karbon Dioksida</option>
+                            <option value="salah">Cairan Empedu</option>
+                        </select>
+                        <select id="match3" class="w-full p-2.5 rounded-xl border border-gray-300 dark:bg-gray-800 text-sm">
+                            <option value="">-- Pilih untuk Paru-Paru --</option>
+                            <option value="salah">Urine</option>
+                            <option value="salah">Keringat</option>
+                            <option value="benar">Karbon Dioksida ($CO_2$) & Uap Air</option>
+                            <option value="salah">Cairan Empedu</option>
+                        </select>
+                        <select id="match4" class="w-full p-2.5 rounded-xl border border-gray-300 dark:bg-gray-800 text-sm">
+                            <option value="">-- Pilih untuk Hati --</option>
+                            <option value="salah">Urine</option>
+                            <option value="salah">Keringat</option>
+                            <option value="salah">Karbon Dioksida</option>
+                            <option value="benar">Zat Warna Empedu (Bilirubin) & Urea</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center space-x-3">
+                    <button onclick="checkSimulation()" class="px-6 py-3 bg-tosca text-primary font-bold rounded-xl shadow hover:opacity-90 transition btn-3d">
+                        Periksa Jawaban Aktivitas <i class="fa-solid fa-check ml-1"></i>
+                    </button>
+                    <div id="simResult" class="mt-4 font-bold text-base"></div>
+                </div>
+            </div>
+            <div class="flex justify-between">
+                <button onclick="openSection('materi')" class="px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-xl hover:opacity-90"><i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya</button>
+                <button onclick="openSection('kuis')" class="px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:opacity-90">Lanjut: Kuis HOTS <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+        </div>
+
+        <!-- 3.6 KUIS INTERAKTIF HOTS -->
+        <div id="content-kuis" class="content-section hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl shadow-lg border-l-8 border-tosca">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-primary dark:text-tosca flex items-center"><i class="fa-solid fa-medal mr-2"></i> Kuis Interaktif HOTS (10 Soal)</h2>
+                    <div class="bg-primary text-white px-4 py-1.5 rounded-full text-sm font-bold flex items-center space-x-2 shadow">
+                        <i class="fa-solid fa-stopwatch"></i>
+                        <span id="quizTimer">15:00</span>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">Soal studi kasus berkonteks nyata. Pilihlah jawaban paling tepat!</p>
+
+                <!-- Kuis Container -->
+                <div id="quizContainer" class="space-y-6">
+                    <!-- Dinamis Diisi JS -->
+                </div>
+                <div id="quizResultBox" class="hidden mt-6 p-6 bg-primary/10 border border-primary/30 rounded-xl text-center space-y-3">
+                    <!-- Hasil Kuis -->
+                </div>
+            </div>
+            <div class="flex justify-between">
+                <button onclick="openSection('simulasi')" class="px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-xl hover:opacity-90"><i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya</button>
+                <button onclick="openSection('asesmenAkhir')" class="px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:opacity-90">Lanjut: Asesmen Akhir <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+        </div>
+
+        <!-- 3.7 ASESMEN AKHIR -->
+        <div id="content-asesmenAkhir" class="content-section hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl shadow-lg border-l-8 border-primary">
+                <h2 class="text-2xl font-bold text-primary dark:text-tosca mb-2 flex items-center"><i class="fa-solid fa-square-poll-vertical mr-2"></i> Asesmen Akhir</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">Evaluasi komprehensif 10 soal tingkat sedang hingga tinggi.</p>
+
+                <div id="asesmenAkhirForm" class="space-y-6">
+                    <!-- Dinamis Diisi JS -->
+                </div>
+                <div id="asesmenAkhirResult" class="hidden mt-6 p-6 bg-tosca/20 border border-tosca rounded-xl text-center space-y-3">
+                    <!-- Hasil Akhir -->
+                </div>
+            </div>
+            <div class="flex justify-between">
+                <button onclick="openSection('kuis')" class="px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-xl hover:opacity-90"><i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya</button>
+                <button onclick="openSection('refleksi')" class="px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:opacity-90">Lanjut: Refleksi <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+        </div>
+
+        <!-- 3.8 REFLEKSI -->
+        <div id="content-refleksi" class="content-section hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl shadow-lg border-l-8 border-tosca">
+                <h2 class="text-2xl font-bold text-primary dark:text-tosca mb-2 flex items-center"><i class="fa-solid fa-comments mr-2"></i> Refleksi Pembelajaran</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">Ungkapkan ulasan dan pengalaman belajarmu hari ini!</p>
+
+                <form onsubmit="submitRefleksi(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">1. Saya sudah memahami...</label>
+                        <textarea required rows="2" id="ref1" placeholder="Tuliskan materi yang berhasil kamu kuasai..." class="w-full p-3 rounded-xl border border-gray-300 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">2. Hal yang paling menarik adalah...</label>
+                        <textarea required rows="2" id="ref2" placeholder="Bagian mana yang paling seru..." class="w-full p-3 rounded-xl border border-gray-300 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">3. Hal yang masih membingungkan adalah...</label>
+                        <textarea required rows="2" id="ref3" placeholder="Tuliskan bagian materi yang masih membuatmu bingung..." class="w-full p-3 rounded-xl border border-gray-300 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">4. Rencana saya setelah belajar materi ini adalah...</label>
+                        <textarea required rows="2" id="ref4" placeholder="Contoh: Menjaga kesehatan ginjal dengan minum cukup air..." class="w-full p-3 rounded-xl border border-gray-300 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">5. Emoticon Perasaan Belajar Hari Ini:</label>
+                        <div class="flex flex-wrap gap-3">
+                            <label class="cursor-pointer text-2xl p-3 bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 hover:scale-110 transition"><input type="radio" name="mood" value="🤩 Sangat Semangat" required class="mr-1"> 🤩</label>
+                            <label class="cursor-pointer text-2xl p-3 bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 hover:scale-110 transition"><input type="radio" name="mood" value="😊 Senang & Paham"> 😊</label>
+                            <label class="cursor-pointer text-2xl p-3 bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 hover:scale-110 transition"><input type="radio" name="mood" value="🤔 Masih Penasaran"> 🤔</label>
+                            <label class="cursor-pointer text-2xl p-3 bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 hover:scale-110 transition"><input type="radio" name="mood" value="😴 Kurang Fokus"> 😴</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-primary to-tosca text-white font-bold rounded-xl shadow hover:opacity-95 transition btn-3d">
+                        Kirim Refleksi <i class="fa-solid fa-paper-plane ml-1"></i>
+                    </button>
+                </form>
+                <div id="refleksiSuccess" class="hidden mt-4 p-3 bg-tosca/20 rounded-xl text-center font-bold text-primary dark:text-tosca">
+                    Terima kasih! Refleksi belajarmu telah tersimpan.
+                </div>
+            </div>
+            <div class="flex justify-between">
+                <button onclick="openSection('asesmenAkhir')" class="px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-xl hover:opacity-90"><i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya</button>
+                <button onclick="openSection('sertifikat')" class="px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:opacity-90">Lanjut: Sertifikat <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+        </div>
+
+        <!-- 3.9 SERTIFIKAT HASIL BELAJAR (A4 LANDSCAPE PNG EXPORT) -->
+        <div id="content-sertifikat" class="content-section hidden space-y-6">
+            <div class="glass-card p-6 rounded-2xl shadow-lg border-l-8 border-primary text-center space-y-6">
+                <h2 class="text-2xl font-bold text-primary dark:text-tosca flex items-center justify-center"><i class="fa-solid fa-award mr-2"></i> Sertifikat Hasil Belajar Digital</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Sertifikat penghargaan resmi atas ketekunanmu menyelesaikan modul pembelajaran interaktif.</p>
+
+                <!-- Tampilan Sertifikat A4 Landscape -->
+                <div class="overflow-x-auto p-2">
+                    <div id="certificateCard" class="relative w-[842px] h-[595px] mx-auto bg-gradient-to-br from-[#2D0059] via-[#3C096C] to-[#121212] text-white p-10 rounded-2xl shadow-2xl border-8 border-tosca flex flex-col justify-between text-left box-border">
+                        <!-- Watermark & Header Sertifikat -->
+                        <div class="flex justify-between items-start border-b border-white/20 pb-4">
+                            <div>
+                                <h4 class="text-tosca font-black text-sm tracking-widest uppercase">SMPN 3 WARUNGGUNUNG</h4>
+                                <h3 class="text-xl font-bold text-white tracking-wide">SERTIFIKAT HASIL BELAJAR</h3>
+                            </div>
+                            <div class="text-right">
+                                <span id="certDate" class="text-xs text-gray-300 block">Tanggal: -</span>
+                                <span class="text-[10px] text-tosca tracking-wider">ID: MPI-EKSKRESI-2026</span>
+                            </div>
+                        </div>
+
+                        <!-- Isi Sertifikat -->
+                        <div class="my-auto text-center space-y-3">
+                            <p class="text-xs text-gray-300 uppercase tracking-widest">Diberikan Kepada Murid Teladan:</p>
+                            <h2 id="certName" class="text-3xl md:text-4xl font-black text-tosca tracking-wider uppercase underline decoration-white/30 decoration-2">-</h2>
+                            <p class="text-sm text-gray-200">Kelas: <span id="certClass" class="font-bold text-white">-</span></p>
+                            <p class="text-xs max-w-xl mx-auto text-gray-300 leading-relaxed mt-2">
+                                Atas keberhasilan dan dedikasi tinggi dalam menguasai modul <br><strong class="text-white">"Menganalisis Sistem Ekskresi pada Manusia dan Gangguan Penyakitnya"</strong>
+                            </p>
+                            <div class="pt-2">
+                                <span class="inline-block bg-tosca text-primary px-6 py-2 rounded-full font-black text-base shadow-lg">
+                                    NILAI AKHIR: <span id="certScore">0</span> / 100 (<span id="certPredikat">-</span>)
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Footer Sertifikat -->
+                        <div class="flex justify-between items-end border-t border-white/20 pt-4 text-xs">
+                            <div>
+                                <p class="font-bold text-tosca">Tim Pengembang MPI</p>
+                                <p class="text-gray-300 text-[10px]">Guru Biologi SMPN 3 Warunggunung</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-12 h-12 rounded-full border-2 border-tosca mx-auto flex items-center justify-center text-tosca font-bold text-xs mb-1">OK</div>
+                                <span class="text-[10px] text-gray-400">Verified Badge</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-tosca">Kurikulum Merdeka</p>
+                                <p class="text-gray-300 text-[10px]">Deep Learning Integration</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Unduh Sertifikat -->
+                <div class="pt-2">
+                    <button onclick="downloadCertificate()" class="px-8 py-3.5 bg-gradient-to-r from-primary to-tosca text-white font-bold rounded-xl shadow-lg hover:opacity-95 transition transform active:scale-95 btn-3d">
+                        <i class="fa-solid fa-file-arrow-down mr-2"></i> Unduh Sertifikat A4 (PNG)
+                    </button>
+                </div>
+            </div>
+            <div class="flex justify-between">
+                <button onclick="openSection('refleksi')" class="px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-xl hover:opacity-90"><i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya</button>
+                <button onclick="openMenu()" class="px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:opacity-90"><i class="fa-solid fa-house mr-1"></i> Kembali ke Menu Utama</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-center py-4 text-xs mt-10 border-t border-gray-300 dark:border-gray-700">
+        <p>&copy; 2026 Media Pembelajaran Interaktif (MPI) | SMPN 3 WARUNGGUNUNG | Didesain sesuai prinsip Deep Learning.</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC LENGKAP -->
+    <script>
+        // Data State Global
+        let studentData = {
+            name: "",
+            class: "",
+            asesmenAwalScore: 0,
+            simulasiDone: false,
+            quizScore: 0,
+            asesmenAkhirScore: 0,
+            asesmenAkhirPredikat: "-"
+        };
+
+        let currentActiveSection = 'login';
+        let isDarkMode = false;
+        let isAudioPlaying = false;
+        let isSpeechActive = false;
+        let quizTimerInterval;
+
+        // Dataset Soal Asesmen Awal (5 soal)
+        const asesmenAwalData = [
+            {
+                q: "1. Apa yang dimaksud dengan ekskresi dalam tubuh manusia?",
+                options: [
+                    "Pengeluaran zat sisa metabolisme yang beracun jika menumpuk",
+                    "Pengeluaran sisa makanan padat dari saluran pencernaan",
+                    "Pemasukan udara segar ke dalam paru-paru",
+                    "Pengedaran zat makanan ke seluruh sel tubuh"
+                ],
+                answer: 0
+            },
+            {
+                q: "2. Manakah organ berikut yang BUKAN organ ekskresi utama manusia?",
+                options: ["Ginjal", "Kulit", "Usus Besar", "Paru-paru"],
+                answer: 2
+            },
+            {
+                q: "3. Gas sisa pernapasan yang dikeluarkan oleh paru-paru adalah...",
+                options: ["Urea dan Garam", "Karbon Dioksida dan Uap Air", "Asam Urat", "Cairan Empedu"],
+                answer: 1
+            },
+            {
+                q: "4. Alat penyaring utama darah dalam pembentukan urine adalah...",
+                options: ["Jantung", "Hati", "Ginjal", "Lambung"],
+                answer: 2
+            },
+            {
+                q: "5. Zat warna empedu yang dihasilkan oleh hati dinamakan...",
+                options: ["Bilirubin", "Albumin", "Insulin", "Hemoglobin"],
+                answer: 0
+            }
+        ];
+
+        // Dataset Soal Kuis HOTS (10 soal cerita)
+        const quizHOTSData = [
+            {
+                q: "1. Rian berolahraga lari marathon di terik siang hari tanpa cukup minum. Setelah selesai, urine Rian berwarna kuning pekat dan jumlahnya sedikit. Mengapa hal ini terjadi?",
+                options: [
+                    "Ginjal mengalami kerusakan permanen",
+                    "Banyak cairan keluar lewat keringat, sehingga ginjal mereabsorpsi lebih banyak air",
+                    "Hati berhenti memproduksi empedu",
+                    "Paru-paru menyerap seluruh air di dalam darah"
+                ],
+                answer: 1,
+                explanation: "Saat suhu panas, air banyak terbuang via keringat. Hormon ADH terpicu mereabsorpsi air di ginjal sehingga urine pekat."
+            },
+            {
+                q: "2. Hasil uji laboratorium menunjukkan adanya kandungan protein (albumin) pada urine seorang pasien. Kerusakan terjadi pada bagian nefron...",
+                options: ["Tubulus Distal", "Glomerulus", "Lengkung Henle", "Pelvis Renalis"],
+                answer: 1,
+                explanation: "Glomerulus berfungsi menyaring protein. Kerusakan glomerulus memicu lolosnya albumin ke urine (Albuminuria)."
+            },
+            {
+                q: "3. Hati merombak sel darah merah tua dan menghasilkan zat warna empedu bernama...",
+                options: ["Urea", "Bilirubin", "Kreatinin", "Amonia"],
+                answer: 1,
+                explanation: "Perombakan eritrosit tua di hati menghasilkan bilirubin yang memberi warna pada urine dan feses."
+            },
+            {
+                q: "4. Seseorang mengalami rasa haus berlebih dan memproduksi urine belasan liter sehari akibat kekurangan hormon ADH. Penyakit ini dinamakan...",
+                options: ["Batu Ginjal", "Diabetes Mellitus", "Diabetes Insipidus", "Nefritis"],
+                answer: 2,
+                explanation: "Diabetes Insipidus disebabkan oleh kekurangan hormon ADH pembawa petunjuk penyerapan air."
+            },
+            {
+                q: "5. Di daerah pegunungan dingin, frekuensi buang air kecil seseorang meningkat drastis. Penyebab utamanya adalah...",
+                options: [
+                    "Kelenjar keringat pasif, sehingga kelebihan cairan dialihkan pengeluarannya via ginjal",
+                    "Ginjal membeku akibat dingin",
+                    "Paru-paru menyerap air udara",
+                    "Hati memproduksi lebih banyak urea"
+                ],
+                answer: 0,
+                explanation: "Udara dingin mengecilkan pori-pori kulit sehingga keringat berkurang, kelebihan cairan dibuang melalui urine."
+            },
+            {
+                q: "6. Tahap penyerapan kembali zat berguna seperti glukosa dan asam amino di nefron terjadi di...",
+                options: [
+                    "Glomerulus (Filtrasi)",
+                    "Tubulus Kontortus Proksimal (Reabsorpsi)",
+                    "Pelvis Renalis",
+                    "Ureter"
+                ],
+                answer: 1,
+                explanation: "Tubulus kontortus proksimal menyerap kembali zat penting seperti glukosa & asam amino ke darah."
+            },
+            {
+                q: "7. Mengapa penderita gagal ginjal kronis harus rutin melangsungkan cuci darah (hemodialisis)?",
+                options: [
+                    "Karena ginjal tidak mampu lagi menyaring racun metabolisme dari darah",
+                    "Agar hati dapat memproduksi zat protein",
+                    "Untuk mengganti fungsi paru-paru",
+                    "Agar feses tidak menumpuk"
+                ],
+                answer: 0,
+                explanation: "Hemodialisis menggantikan fungsi filtrasi ginjal yang rusak untuk membuang urea dan racun tubuh."
+            },
+            {
+                q: "8. Kelenjar keringat dan pembuluh darah pada kulit terletak pada lapisan...",
+                options: ["Epidermis", "Dermis (Lapisan Jangat)", "Hipodermis", "Lapisan Tanduk"],
+                answer: 1,
+                explanation: "Dermis mengandung kelenjar keringat, kelenjar minyak, pembuluh darah, dan ujung saraf."
+            },
+            {
+                q: "9. Sering menahan buang air kecil dalam waktu lama berisiko memicu timbulnya penyakit...",
+                options: [
+                    "Batu Ginjal / Infeksi Saluran Kemih",
+                    "Asma Paru-paru",
+                    "Sirosis Hati",
+                    "Diabetes Melitus"
+                ],
+                answer: 0,
+                explanation: "Menahan buang air kecil menyebabkan mineral urine mengendap membentuk kristal batu ginjal."
+            },
+            {
+                q: "10. Pertukaran gas $CO_2$ dan $O_2$ pada paru-paru terjadi di dalam bagian...",
+                options: ["Bronkus", "Alveolus", "Trakea", "Laring"],
+                answer: 1,
+                explanation: "Alveolus adalah kantung tipis tempat difusi $CO_2$ dari darah dan $O_2$ dari udara."
+            }
+        ];
+
+        // Dataset Soal Asesmen Akhir (10 soal)
+        const asesmenAkhirData = [
+            {
+                q: "1. Urutan tahap pembentukan urine yang benar adalah...",
+                options: [
+                    "Filtrasi -> Reabsorpsi -> Augmentasi",
+                    "Filtrasi -> Augmentasi -> Reabsorpsi",
+                    "Reabsorpsi -> Filtrasi -> Augmentasi",
+                    "Augmentasi -> Reabsorpsi -> Filtrasi"
+                ],
+                answer: 0
+            },
+            {
+                q: "2. Filtrat glomerulus (urine primer) pada orang sehat tidak boleh mengandung...",
+                options: ["Air & Garam", "Glukosa & Asam Amino", "Sel Darah & Protein Besar", "Urea"],
+                answer: 2
+            },
+            {
+                q: "3. Kelenjar minyak (sebasea) pada kulit bermuara di...",
+                options: ["Pori Keringat", "Folikel Rambut", "Pembuluh Vena", "Subkutan"],
+                answer: 1
+            },
+            {
+                q: "4. Fungsi dari vesika urinaria (kandung kemih) adalah...",
+                options: [
+                    "Menyaring darah",
+                    "Menampung urine sementara sebelum dikeluarkan",
+                    "Merombak eritrosit",
+                    "Mengeluarkan keringat"
+                ],
+                answer: 1
+            },
+            {
+                q: "5. Penderita penyakit kuning (jaundice) memiliki kulit kekuningan karena penumpukan...",
+                options: ["Melanin", "Bilirubin (zat warna empedu)", "Urea", "Glukosa"],
+                answer: 1
+            },
+            {
+                q: "6. Zat sisa utama hasil perombakan sel darah merah tua di hati adalah...",
+                options: ["Bilirubin", "Asam Urat", "Glukosa", "Kalsium"],
+                answer: 0
+            },
+            {
+                q: "7. Langkah preventif terbaik menjaga kesehatan ginjal adalah...",
+                options: [
+                    "Minum air putih secukupnya (8 gelas/hari) dan tidak menahan kencing",
+                    "Makan suplemen tinggi protein setiap hari",
+                    "Hindari olahraga terik",
+                    "Minum obat anti nyeri rutin"
+                ],
+                answer: 0
+            },
+            {
+                q: "8. Mangkok pembungkus glomerulus dinamakan...",
+                options: ["Tubulus Distal", "Kapsula Bowman", "Lengkung Henle", "Pelvis"],
+                answer: 1
+            },
+            {
+                q: "9. Jika tubuh kelebihan konsumsi garam, ginjal merespons dengan...",
+                options: [
+                    "Mengurangi volume urine dan meningkatkan rasa haus",
+                    "Mengeluarkan urine encer berlebih",
+                    "Menghentikan keringat",
+                    "Merusak nefron"
+                ],
+                answer: 0
+            },
+            {
+                q: "10. Nefritis adalah peradangan nefron ginjal yang sering disebabkan oleh infeksi...",
+                options: ["Bakteri Streptococcus", "Virus Influenza", "Jamur", "Ameba"],
+                answer: 0
+            }
+        ];
+
+        // Inisialisasi Aplikasi
+        window.onload = function() {
+            renderAsesmenAwal();
+            renderQuizHOTS();
+            renderAsesmenAkhir();
+        };
+
+        // Login Handler
+        function handleLogin(e) {
+            e.preventDefault();
+            const nama = document.getElementById('inputNama').value.trim();
+            let kelas = document.getElementById('selectKelas').value;
+            if (kelas === 'LAINNYA') {
+                kelas = document.getElementById('inputManualKelas').value.trim() || 'VIII Lainnya';
+            }
+
+            if (!nama || !kelas) {
+                alertCustom("Mohon isi nama dan kelas terlebih dahulu!");
+                return;
+            }
+
+            studentData.name = nama;
+            studentData.class = kelas;
+
+            // Update Badge Identitas
+            document.getElementById('badgeName').innerText = nama;
+            document.getElementById('badgeClass').innerText = kelas;
+            document.getElementById('welcomeName').innerText = nama;
+
+            // Transition Section
+            document.getElementById('sectionLogin').classList.add('hidden');
+            document.getElementById('sectionMenu').classList.remove('hidden');
+            document.getElementById('homeBtn').classList.remove('hidden');
+            document.getElementById('studentBadge').classList.remove('hidden');
+            document.getElementById('progressBarContainer').classList.remove('hidden');
+
+            updateGlobalProgress();
+        }
+
+        function checkManualClass() {
+            const val = document.getElementById('selectKelas').value;
+            const manualDiv = document.getElementById('manualClassDiv');
+            if (val === 'LAINNYA') {
+                manualDiv.classList.remove('hidden');
+                document.getElementById('inputManualKelas').required = true;
+            } else {
+                manualDiv.classList.add('hidden');
+                document.getElementById('inputManualKelas').required = false;
+            }
+        }
+
+        // Section Switcher
+        function openSection(sectionName) {
+            document.getElementById('sectionLogin').classList.add('hidden');
+            document.getElementById('sectionMenu').classList.add('hidden');
+            
+            const sections = ['tujuan', 'apersepsi', 'asesmenAwal', 'materi', 'simulasi', 'kuis', 'asesmenAkhir', 'refleksi', 'sertifikat'];
+            sections.forEach(s => {
+                const el = document.getElementById(`content-${s}`);
+                if (el) el.classList.add('hidden');
+            });
+
+            if (sectionName === 'menu') {
+                document.getElementById('sectionMenu').classList.remove('hidden');
+            } else {
+                const targetEl = document.getElementById(`content-${sectionName}`);
+                if (targetEl) targetEl.classList.remove('hidden');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateGlobalProgress();
+        }
+
+        function openMenu() { openSection('menu'); }
+        function goHome() { openMenu(); }
+
+        // Render Asesmen Awal
+        function renderAsesmenAwal() {
+            const container = document.getElementById('asesmenAwalForm');
+            let html = '';
+            asesmenAwalData.forEach((item, index) => {
+                html += `<div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow space-y-2 border border-gray-100 dark:border-gray-700">
+                    <p class="font-semibold text-sm text-gray-800 dark:text-gray-200">${item.q}</p>
+                    <div class="space-y-1">`;
+                item.options.forEach((opt, optIdx) => {
+                    html += `<label class="block text-xs md:text-sm p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                        <input type="radio" name="awal_${index}" value="${optIdx}" class="mr-2"> ${opt}
+                    </label>`;
+                });
+                html += `</div></div>`;
+            });
+            html += `<button type="button" onclick="submitAsesmenAwal()" class="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow hover:opacity-90 btn-3d">Kirim Jawaban Asesmen Awal</button>`;
+            container.innerHTML = html;
+        }
+
+        function submitAsesmenAwal() {
+            let score = 0;
+            asesmenAwalData.forEach((item, index) => {
+                const radios = document.getElementsByName(`awal_${index}`);
+                for (let r of radios) {
+                    if (r.checked && parseInt(r.value) === item.answer) score += 20;
+                }
+            });
+            studentData.asesmenAwalScore = score;
+            const resBox = document.getElementById('asesmenAwalResult');
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `Skor Kemampuan Awal Anda: <strong>${score} / 100</strong>. Siap untuk mempelajari modul materi!`;
+            updateGlobalProgress();
+        }
+
+        // Simulasi Checker
+        function checkSimulation() {
+            const m1 = document.getElementById('match1').value;
+            const m2 = document.getElementById('match2').value;
+            const m3 = document.getElementById('match3').value;
+            const m4 = document.getElementById('match4').value;
+            const res = document.getElementById('simResult');
+
+            if (m1 === 'benar' && m2 === 'benar' && m3 === 'benar' && m4 === 'benar') {
+                res.innerHTML = `<span class="text-green-600 dark:text-green-400">🎉 Luar Biasa! Semua pasangan organ dan zat sisa sudah tepat. Growth Mindset!</span>`;
+                studentData.simulasiDone = true;
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            } else {
+                res.innerHTML = `<span class="text-amber-600 dark:text-amber-400">⚠️ Masih ada pasangan yang belum cocok. Periksa kembali modul materi lalu coba lagi!</span>`;
+            }
+            updateGlobalProgress();
+        }
+
+        // Render Kuis HOTS
+        let quizTimeRemaining = 900; // 15 menit
+        function renderQuizHOTS() {
+            const container = document.getElementById('quizContainer');
+            let html = '';
+            quizHOTSData.forEach((item, index) => {
+                html += `<div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow space-y-3 border border-gray-100 dark:border-gray-700">
+                    <p class="font-semibold text-sm text-gray-800 dark:text-gray-200">${item.q}</p>
+                    <div class="space-y-1">`;
+                item.options.forEach((opt, optIdx) => {
+                    html += `<label class="block text-xs md:text-sm p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                        <input type="radio" name="quiz_${index}" value="${optIdx}" class="mr-2"> ${opt}
+                    </label>`;
+                });
+                html += `</div></div>`;
+            });
+            html += `<div class="text-center"><button type="button" onclick="submitQuizHOTS()" class="px-8 py-3 bg-gradient-to-r from-primary to-tosca text-white font-bold rounded-xl shadow hover:opacity-95 btn-3d">Selesaikan Kuis HOTS</button></div>`;
+            container.innerHTML = html;
+
+            if (!quizTimerInterval) {
+                quizTimerInterval = setInterval(() => {
+                    quizTimeRemaining--;
+                    let m = Math.floor(quizTimeRemaining / 60);
+                    let s = quizTimeRemaining % 60;
+                    document.getElementById('quizTimer').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                    if (quizTimeRemaining <= 0) {
+                        clearInterval(quizTimerInterval);
+                        submitQuizHOTS();
+                    }
+                }, 1000);
+            }
+        }
+
+        function submitQuizHOTS() {
+            clearInterval(quizTimerInterval);
+            let correctCount = 0;
+            quizHOTSData.forEach((item, index) => {
+                const radios = document.getElementsByName(`quiz_${index}`);
+                for (let r of radios) {
+                    if (r.checked && parseInt(r.value) === item.answer) correctCount++;
+                }
+            });
+            const score = correctCount * 10;
+            studentData.quizScore = score;
+
+            const resBox = document.getElementById('quizResultBox');
+            resBox.classList.remove('hidden');
+            let feedbackHTML = `<h3 class="text-xl font-bold text-primary dark:text-tosca">Hasil Kuis HOTS</h3>
+                <p class="text-lg">Skor Kamu: <strong>${score} / 100</strong> (${correctCount} benar dari 10 soal)</p>`;
+            
+            if (score >= 90) {
+                feedbackHTML += `<p class="text-green-600 font-bold">✨ Sempurna! Kemampuan analisis berikeras kamu sangat outstanding!</p>`;
+                confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+            } else {
+                feedbackHTML += `<p class="text-blue-600">Tetap tingkatkan pemahamanmu! Pelajari pembahasan di bawah ini.</p>`;
+            }
+
+            feedbackHTML += `<div class="mt-4 text-left space-y-3 max-h-60 overflow-y-auto p-4 bg-white dark:bg-gray-900 rounded-xl border">
+                <h4 class="font-bold text-sm text-primary dark:text-tosca">Pembahasan Kuis:</h4>`;
+            quizHOTSData.forEach((item, i) => {
+                feedbackHTML += `<p class="text-xs"><strong>Soal ${i+1}:</strong> ${item.explanation}</p>`;
+            });
+            feedbackHTML += `</div>`;
+
+            resBox.innerHTML = feedbackHTML;
+            updateGlobalProgress();
+        }
+
+        // Render Asesmen Akhir
+        function renderAsesmenAkhir() {
+            const container = document.getElementById('asesmenAkhirForm');
+            let html = '';
+            asesmenAkhirData.forEach((item, index) => {
+                html += `<div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow space-y-2 border border-gray-100 dark:border-gray-700">
+                    <p class="font-semibold text-sm text-gray-800 dark:text-gray-200">${item.q}</p>
+                    <div class="space-y-1">`;
+                item.options.forEach((opt, optIdx) => {
+                    html += `<label class="block text-xs md:text-sm p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                        <input type="radio" name="akhir_${index}" value="${optIdx}" class="mr-2"> ${opt}
+                    </label>`;
+                });
+                html += `</div></div>`;
+            });
+            html += `<button type="button" onclick="submitAsesmenAkhir()" class="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow hover:opacity-90 btn-3d">Kirim Asesmen Akhir</button>`;
+            container.innerHTML = html;
+        }
+
+        function submitAsesmenAkhir() {
+            let correctCount = 0;
+            asesmenAkhirData.forEach((item, index) => {
+                const radios = document.getElementsByName(`akhir_${index}`);
+                for (let r of radios) {
+                    if (r.checked && parseInt(r.value) === item.answer) correctCount++;
+                }
+            });
+            const score = correctCount * 10;
+            studentData.asesmenAkhirScore = score;
+
+            let predikat = "";
+            if (score >= 90) predikat = "Sangat Baik";
+            else if (score >= 80) predikat = "Baik";
+            else if (score >= 70) predikat = "Cukup";
+            else predikat = "Perlu Bimbingan";
+
+            studentData.asesmenAkhirPredikat = predikat;
+
+            const resBox = document.getElementById('asesmenAkhirResult');
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `<h3 class="text-xl font-bold text-primary dark:text-tosca">Hasil Asesmen Akhir</h3>
+                <p class="text-3xl font-black text-primary dark:text-tosca mt-1">Nilai: ${score} / 100</p>
+                <p class="text-lg font-bold">Predikat: <span class="text-tosca">${predikat}</span></p>`;
+
+            if (score >= 90) {
+                confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+            }
+
+            // Sync ke Sertifikat
+            document.getElementById('certName').innerText = studentData.name || "MURID TELADAN";
+            document.getElementById('certClass').innerText = studentData.class || "VIII";
+            document.getElementById('certScore').innerText = score;
+            document.getElementById('certPredikat').innerText = predikat;
+            document.getElementById('certDate').innerText = "Tanggal: " + new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+
+            updateGlobalProgress();
+        }
+
+        // Refleksi Submit
+        function submitRefleksi(e) {
+            e.preventDefault();
+            document.getElementById('refleksiSuccess').classList.remove('hidden');
+            updateGlobalProgress();
+        }
+
+        // Global Progress %
+        function updateGlobalProgress() {
+            let completed = 20; // Status Login
+            if (studentData.asesmenAwalScore > 0) completed += 20;
+            if (studentData.simulasiDone) completed += 20;
+            if (studentData.quizScore > 0) completed += 20;
+            if (studentData.asesmenAkhirScore > 0) completed += 20;
+
+            document.getElementById('progressBar').style.width = `${completed}%`;
+            document.getElementById('globalProgressText').innerText = `${completed}%`;
+        }
+
+        // DOWNLOAD SERTIFIKAT PNG REAL USE HTML2CANVAS
+        function downloadCertificate() {
+            const certElement = document.getElementById('certificateCard');
+            alertCustom("Memproses pengunduhan Sertifikat A4 PNG... Silakan tunggu sebentar.");
+
+            html2canvas(certElement, {
+                scale: 2, // High resolution PNG
+                useCORS: true,
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Sertifikat_${studentData.name || 'Murid'}_SistemEkskresi.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                alertCustom("Gagal mengunduh sertifikat. Pastikan browser mendukung ekspor canvas.");
+            });
+        }
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.classList.toggle('dark', isDarkMode);
+            const icon = document.getElementById('themeIcon');
+            icon.className = isDarkMode ? "fa-solid fa-sun" : "fa-solid fa-moon";
+        }
+
+        // Audio Toggle
+        function toggleAudio() {
+            const audio = document.getElementById('bgAudio');
+            const icon = document.getElementById('audioIcon');
+            isAudioPlaying = !isAudioPlaying;
+            if (isAudioPlaying) {
+                audio.play().catch(e => console.log("Audio autoplay prevented", e));
+                icon.className = "fa-solid fa-volume-high text-tosca";
+            } else {
+                audio.pause();
+                icon.className = "fa-solid fa-volume-xmark";
+            }
+        }
+
+        // Text-to-Speech Web Speech API (Indonesian Accent)
+        function toggleSpeech() {
+            if (!('speechSynthesis' in window)) {
+                alertCustom("Maaf, browser Anda tidak mendukung fitur Text-to-Speech suaraku.");
+                return;
+            }
+            if (isSpeechActive) {
+                window.speechSynthesis.cancel();
+                isSpeechActive = false;
+                document.getElementById('ttsIcon').className = "fa-solid fa-volume-high";
+            } else {
+                const textToSpeak = "Selamat datang di Media Pembelajaran Interaktif Sistem Ekskresi Manusia SMPN 3 Warunggunung. Pelajari materi secara cermat dan selesaikan kuisnya.";
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                
+                // Cari suara bahasa Indonesia
+                const voices = window.speechSynthesis.getVoices();
+                const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
+                if (idVoice) utterance.voice = idVoice;
+                
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.95;
+                utterance.onend = () => {
+                    isSpeechActive = false;
+                    document.getElementById('ttsIcon').className = "fa-solid fa-volume-high";
+                };
+                
+                window.speechSynthesis.speak(utterance);
+                isSpeechActive = true;
+                document.getElementById('ttsIcon').className = "fa-solid fa-volume-xmark animate-pulse text-tosca";
+            }
+        }
+
+        // Custom Modal Alert
+        function alertCustom(msg) {
+            const existing = document.getElementById('customAlertModal');
+            if (existing) existing.remove();
+
+            const div = document.createElement('div');
+            div.id = 'customAlertModal';
+            div.className = "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in";
+            div.innerHTML = `<div class="bg-white dark:bg-carddark p-6 rounded-2xl shadow-2xl max-w-sm w-full text-center space-y-4 border border-primary/20">
+                <div class="text-4xl text-tosca"><i class="fa-solid fa-circle-info"></i></div>
+                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">${msg}</p>
+                <button onclick="this.parentElement.parentElement.remove()" class="w-full py-2.5 bg-primary text-white font-bold rounded-xl shadow hover:opacity-90 btn-3d">Tutup</button>
+            </div>`;
+            document.body.appendChild(div);
+        }
+    </script>
+</body>
+</html>
